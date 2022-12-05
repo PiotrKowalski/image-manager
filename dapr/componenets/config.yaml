@@ -15,7 +15,7 @@ spec:
         - name: "Service Health Status"
           checkID: "serviceHealth:${APP_ID}"
           interval: "1s"
-          http: "http://${HOST_ADDRESS}:${APP_PORT}/health"
+          grpc: "${HOST_ADDRESS}:${APP_PORT}"
 #  tracing:
 #    samplingRate: "1"
 #    zipkin:
