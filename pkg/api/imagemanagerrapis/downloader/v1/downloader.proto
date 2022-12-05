@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package downloader.v1;
+
+import "google/api/annotations.proto";
+
+service DownloaderService {
+  rpc DownloadImage(DownloadImageRequest) returns (DownloadImageResponse) {
+         option (google.api.http) = {
+             post: "/v1/downloader/download/image"
+              body: "*"
+            };
+  }
+}
+
+
+message DownloadImageRequest {
+  string url = 1;
+}
+
+message DownloadImageResponse {
+  bytes image = 1;
+}
