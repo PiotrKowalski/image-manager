@@ -15,40 +15,7 @@
   "produces": [
     "application/json"
   ],
-  "paths": {
-    "/v1/downloader/download/image": {
-      "post": {
-        "operationId": "DownloaderService_DownloadImage",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1DownloadImageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1DownloadImageRequest"
-            }
-          }
-        ],
-        "tags": [
-          "DownloaderService"
-        ]
-      }
-    }
-  },
+  "paths": {},
   "definitions": {
     "protobufAny": {
       "type": "object",
@@ -77,18 +44,18 @@
         }
       }
     },
-    "v1DownloadImageRequest": {
+    "v1DownloadImageResponse": {
       "type": "object",
       "properties": {
-        "url": {
+        "imageId": {
           "type": "string"
         }
       }
     },
-    "v1DownloadImageResponse": {
+    "v1GetImageResponse": {
       "type": "object",
       "properties": {
-        "image": {
+        "chunk": {
           "type": "string",
           "format": "byte"
         }

@@ -2,6 +2,17 @@ syntax = "proto3";
 
 package resizer.v1;
 
+service ResizerService {
+  rpc ResizeImage(ResizeImageRequest) returns (ResizeImageResponse) {}
+}
+
+message ResizeImageRequest {
+  string url = 1;
+}
+
+message ResizeImageResponse {
+  bytes image = 1;
+}
 
 import "google/type/money.proto";
 

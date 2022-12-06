@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package downloader.v1;
+
+
+service DownloaderService {
+  rpc DownloadImage(DownloadImageRequest) returns (DownloadImageResponse) {}
+  rpc GetImage(GetImageRequest) returns (GetImageResponse) {};
+}
+
+
+message DownloadImageRequest {
+  string url = 1;
+}
+
+message DownloadImageResponse {
+  string image_id = 1;
+}
+
+message GetImageRequest {
+  string image_id = 1;
+}
+
+message GetImageResponse {
+  bytes chunk = 1;
+}

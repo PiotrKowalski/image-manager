@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DownloaderServiceClient interface {
 	DownloadImage(ctx context.Context, in *DownloadImageRequest, opts ...grpc.CallOption) (*DownloadImageResponse, error)
+	GetImage(ctx context.Context, in *GetImageRequest, opts ...grpc.CallOption) (*GetImageResponse, error)
 }
 
 type downloaderServiceClient struct {
@@ -42,11 +43,21 @@ func (c *downloaderServiceClient) DownloadImage(ctx context.Context, in *Downloa
 	return out, nil
 }
 
+func (c *downloaderServiceClient) GetImage(ctx context.Context, in *GetImageRequest, opts ...grpc.CallOption) (*GetImageResponse, error) {
+	out := new(GetImageResponse)
+	err := c.cc.Invoke(ctx, "/downloader.v1.DownloaderService/GetImage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DownloaderServiceServer is the server API for DownloaderService service.
 // All implementations must embed UnimplementedDownloaderServiceServer
 // for forward compatibility
 type DownloaderServiceServer interface {
 	DownloadImage(context.Context, *DownloadImageRequest) (*DownloadImageResponse, error)
+	GetImage(context.Context, *GetImageRequest) (*GetImageResponse, error)
 	mustEmbedUnimplementedDownloaderServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedDownloaderServiceServer struct {
 
 func (UnimplementedDownloaderServiceServer) DownloadImage(context.Context, *DownloadImageRequest) (*DownloadImageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadImage not implemented")
+}
+func (UnimplementedDownloaderServiceServer) GetImage(context.Context, *GetImageRequest) (*GetImageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetImage not implemented")
 }
 func (UnimplementedDownloaderServiceServer) mustEmbedUnimplementedDownloaderServiceServer() {}
 
@@ -88,6 +102,24 @@ func _DownloaderService_DownloadImage_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DownloaderService_GetImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DownloaderServiceServer).GetImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/downloader.v1.DownloaderService/GetImage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DownloaderServiceServer).GetImage(ctx, req.(*GetImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DownloaderService_ServiceDesc is the grpc.ServiceDesc for DownloaderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var DownloaderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DownloadImage",
 			Handler:    _DownloaderService_DownloadImage_Handler,
+		},
+		{
+			MethodName: "GetImage",
+			Handler:    _DownloaderService_GetImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

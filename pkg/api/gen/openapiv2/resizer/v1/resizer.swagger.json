@@ -4,6 +4,11 @@
     "title": "resizer/v1/resizer.proto",
     "version": "version not set"
   },
+  "tags": [
+    {
+      "name": "ResizerService"
+    }
+  ],
   "consumes": [
     "application/json"
   ],
@@ -36,6 +41,15 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1ResizeImageResponse": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string",
+          "format": "byte"
         }
       }
     }
