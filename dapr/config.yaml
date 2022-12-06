@@ -16,7 +16,7 @@ spec:
           checkID: "serviceHealth:${APP_ID}"
           interval: "1s"
           grpc: "${HOST_ADDRESS}:${APP_PORT}"
-#  tracing:
-#    samplingRate: "1"
-#    zipkin:
-#      endpointAddress: http://localhost:9411/api/v2/spans
+  tracing:
+    samplingRate: "1"
+    zipkin:
+      endpointAddress: http://localhost:9411/api/v2/spans
