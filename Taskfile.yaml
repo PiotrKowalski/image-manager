@@ -1,0 +1,31 @@
+version: '3'
+
+
+vars:
+  VERSION:
+    sh: scripts/dev_version.sh
+
+
+tasks:
+  build-linux:
+    env:
+      GOOS: "linux"
+      GOARCH: "amd64"
+    cmds:
+      - go build {{.LD_FLAGS}}  {{.APP_FOLDER}}/{{.CLI_ARGS}}
+    vars:
+      APP_FOLDER: github.com/PiotrKowalski/image-manager/internal/app
+      LD_FLAGS: "-ldflags=-X pkg/version.Version={{.VERSION}}"
+
+  proto:
+    summary: |
+      Generate api files from proto specification
+    cmds:
+      - cd pkg/api/imagemanagerapis && buf mod update && buf build
+      - cd pkg/api && buf generate imagemanagerapis
+
+
+  run:
+    cmds:
+      - cd dapr run --app-id downloader --app-port 5266 --dapr-http-port 3500   --app-protocol grpc    --components-path ../../../dapr/componenets  --config ../../../dapr/config.yaml --log-level debug  go run .
+
