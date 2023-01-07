@@ -5,7 +5,7 @@ package downloader.v1;
 
 service DownloaderService {
   rpc DownloadImage(DownloadImageRequest) returns (DownloadImageResponse) {}
-  rpc GetImage(GetImageRequest) returns (GetImageResponse) {};
+  rpc GetImage(GetImageRequest) returns (stream GetImageResponse) {};
 }
 
 
