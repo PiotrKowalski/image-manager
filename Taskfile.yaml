@@ -1,7 +1,7 @@
 version: '3'
 
 
-vars:
+env:
   VERSION:
     sh: scripts/dev_version.sh
   LD_FLAGS: '-ldflags="-X pkg/version.Version={{.VERSION}}"'
@@ -26,10 +26,12 @@ tasks:
       - cd pkg/api && buf generate imagemanagerapis
 
   run:
-    dir: '{{.USER_WORKING_DIR}}'
+    dir: .
     vars:
       APP_PORT:
         sh: scripts/free_app_port.sh
+      GRPC_PORT:
+        sh: scripts/free_grpc_port.sh
       HTTP_PORT:
         sh: scripts/free_http_port.sh
     dotenv: ['./{{.APP_FOLDER}}/{{.CLI_ARGS}}/.env', '.env' ]
@@ -37,9 +39,18 @@ tasks:
       - dapr run
         --app-id {{.CLI_ARGS}}
         --app-port {{.APP_PORT}}
-        --app-protocol grpc
+        --dapr-grpc-port {{.GRPC_PORT}}
+        --dapr-http-port {{.HTTP_PORT}}
         --components-path {{.DAPR_COMPONENTS}}
         --config {{.DAPR_CONFIG}}
         --log-level debug
-        go run {{.REPO_FOLDER}}/{{.APP_FOLDER}}/{{.CLI_ARGS}}
+        go run ./{{.APP_FOLDER}}/{{.CLI_ARGS}}
+
+# Not working for now
+#  run-all:
+#    dir: .
+#    dotenv: [ '.env' ]
+#    cmds:
+#      - ./scripts/run_service.sh downloader
+##      - ./scripts/run_service.sh resizer
 

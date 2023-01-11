@@ -6,16 +6,32 @@ spec:
   nameResolution:
     component: "consul"
     configuration:
-      selfRegister: true
-      checks:
-        - name: "Dapr Health Status"
-          checkID: "daprHealth:${APP_ID}"
-          interval: "1s"
-          http: "http://${HOST_ADDRESS}:${DAPR_HTTP_PORT}/v1.0/healthz"
-        - name: "Service Health Status"
-          checkID: "serviceHealth:${APP_ID}"
-          interval: "1s"
-          grpc: "${HOST_ADDRESS}:${APP_PORT}"
+      client:
+        address: "127.0.0.1:8500"
+      selfRegister: false
+      queryOptions:
+        useCache: true
+      daprPortMetaKey: "DAPR_PORT"
+      advancedRegistration:
+        name: "${APP_ID}"
+        port: ${APP_PORT}
+        address: "${HOST_ADDRESS}"
+        meta:
+          DAPR_GRPC_PORT: "${DAPR_GRPC_PORT}"
+          DAPR_HTTP_PORT: "${DAPR_HTTP_PORT}"
+          DAPR_METRICS_PORT: "${DAPR_METRICS_PORT}"
+          DAPR_PROFILE_PORT: "${DAPR_PROFILE_PORT}"
+        tags:
+            - "dapr"
+        checks:
+          - name: "Dapr Health Status"
+            checkID: "daprHealth:${APP_ID}"
+            interval: "1s"
+            http: "http://${HOST_ADDRESS}:${DAPR_HTTP_PORT}/v1.0/healthz"
+          - name: "Service Health Status"
+            checkID: "serviceHealth:${APP_ID}"
+            interval: "1s"
+            grpc: "${HOST_ADDRESS}:${APP_PORT}"
   tracing:
     samplingRate: "1"
     zipkin:
