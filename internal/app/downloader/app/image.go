@@ -2,9 +2,9 @@ package app
 
 import (
 	"bytes"
-	"encoding/base64"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -22,18 +22,19 @@ func downloadFile(URL string) ([]byte, error) {
 	//
 	imageBytes := streamToByte(response.Body)
 	//
-	encodedImage := make([]byte, base64.StdEncoding.EncodedLen(len(imageBytes)))
-	base64.StdEncoding.Encode(encodedImage, imageBytes)
+	//encodedImage := make([]byte, base64.StdEncoding.EncodedLen(len(imageBytes)))
+	//base64.StdEncoding.Encode(encodedImage, imageBytes)
 
-	return encodedImage, nil
+	return imageBytes, nil
 }
 
 func streamToByte(stream io.Reader) []byte {
 	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(stream)
+	n, err := buf.ReadFrom(stream)
 	if err != nil {
 		return nil
 	}
+	log.Println("Bytes read from file: ", n)
 
 	return buf.Bytes()
 }

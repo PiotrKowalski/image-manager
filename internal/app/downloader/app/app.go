@@ -1,11 +1,9 @@
 package app
 
 import (
-	"bytes"
 	"context"
 	"github.com/allegro/bigcache/v3"
 	"github.com/dapr/go-sdk/client"
-	"log"
 	"time"
 )
 
@@ -48,38 +46,39 @@ func (a *App) DownloadImage(ctx context.Context, url string) (string, error) {
 	return url, err
 }
 
-func (a *App) GetImage(ctx context.Context, url string) (<-chan []byte, error) {
+func (a *App) GetImage(ctx context.Context, url string) ([]byte, error) {
 	image, err := a.cache.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	reader := bytes.NewReader(image)
-
-	// read only 4 byte from our io.Reader
-	buf := make([]byte, 10000)
-
-	fileChan := make(chan []byte, 100000)
-	go func() {
-		defer close(fileChan)
-		i := 0
-		for {
-
-			n, err := reader.Read(buf)
-			if err != nil {
-				break
-			}
-			log.Printf("Loop %d buf length %d %d", i, n, reader.Len())
-			fileChan <- buf
-
-			i += 1
-
-			if n == 0 {
-				break
-			}
-		}
-
-	}()
-
-	return fileChan, nil
+	return image, nil
+	//reader := bytes.NewReader(image)
+	//
+	//// read only 4 byte from our io.Reader
+	//buf := make([]byte, 10000)
+	//
+	//fileChan := make(chan []byte, 1)
+	//go func() {
+	//	defer close(fileChan)
+	//	i := 0
+	//	for {
+	//
+	//		n, err := reader.Read(buf)
+	//		if err != nil {
+	//			break
+	//		}
+	//		log.Printf("Loop %d buf length %d %d", i, n, reader.Len())
+	//		fileChan <- buf
+	//
+	//		i += 1
+	//
+	//		if n == 0 {
+	//			break
+	//		}
+	//	}
+	//
+	//}()
+	//
+	//return fileChan, nil
 }

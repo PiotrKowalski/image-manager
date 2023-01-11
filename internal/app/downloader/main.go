@@ -14,8 +14,7 @@ func main() {
 	configProvider := remote.NewConsulRemoteConfigProvider()
 	err := configProvider.LoadStoreConfig()
 	if err != nil {
-		log.Print(err)
-		return
+		log.Fatal(err)
 	}
 	err = configProvider.StartRemoteWatch()
 	if err != nil {
@@ -24,7 +23,7 @@ func main() {
 
 	appPort, err := config.ReadEnvString("APP_PORT")
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%v", appPort))
@@ -35,7 +34,7 @@ func main() {
 	s := grpc.NewServer()
 	err = ports.NewGRPCServer(s)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 
 	if err := s.Serve(lis); err != nil {

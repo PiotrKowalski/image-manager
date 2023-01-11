@@ -1,13 +1,18 @@
 package ports
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"github.com/PiotrKowalski/image-manager/internal/app/downloader/app"
 	pb "github.com/PiotrKowalski/image-manager/pkg/api/gen/proto/go/downloader/v1"
+	"github.com/allegro/bigcache/v3"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
-	"log"
+	"google.golang.org/grpc/status"
+	"io"
 )
 
 type GRPCServer struct {
@@ -43,33 +48,34 @@ func (s GRPCServer) DownloadImage(ctx context.Context, in *pb.DownloadImageReque
 }
 
 func (s GRPCServer) GetImage(req *pb.GetImageRequest, server pb.DownloaderService_GetImageServer) error {
-	//TODO implement me
 	ctx := context.Background()
-	imageChan, err := s.app.GetImage(ctx, req.GetImageId())
-	if err != nil {
+	image, err := s.app.GetImage(ctx, req.GetImageId())
+	switch {
+	case errors.Is(err, bigcache.ErrEntryNotFound):
+		return status.Error(codes.NotFound, "image not found")
+	case err != nil:
 		return err
 	}
 
-	imageByte := make([]byte, 10000)
-	var ok bool
-loop:
+	reader := bytes.NewReader(image)
+	buf := make([]byte, 10000)
+
 	for {
-		select {
-		case imageByte, ok = <-imageChan:
-			if !ok {
-				log.Println("here breaks", imageByte)
-				break loop
-			}
+		_, err := reader.Read(buf)
+		if errors.Is(err, io.EOF) {
+			break
+		}
 
-			err = server.Send(&pb.GetImageResponse{Chunk: imageByte})
+		if err != nil {
+			return err
+		}
 
-			if err != nil {
-				log.Println("2 here breaks", imageByte)
-				return err
-
-			}
+		err = server.Send(&pb.GetImageResponse{Chunk: buf})
+		if err != nil {
+			return err
 
 		}
+
 	}
 	return nil
 }
